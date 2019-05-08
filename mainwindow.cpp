@@ -21,6 +21,7 @@ MainWindow::~MainWindow()
 
 const int SIZE = 9;
 int SudokuRealMatrix[SIZE][SIZE];
+int SudokuMaskMatrix[SIZE][SIZE];
 int ArrayForTests[SIZE*SIZE][SIZE] = {0};
 
 bool CheckRow (int x, int y);
@@ -222,6 +223,7 @@ void MainWindow::on_btn_newgame_clicked()
                 }
 
                 SudokuRealMatrix[i][j] = rand()%9+1;
+                SudokuMaskMatrix [i][j] = SudokuRealMatrix [i][j];
 
                 if (CheckRepeated (i, j))
                 {
@@ -238,31 +240,18 @@ void MainWindow::on_btn_newgame_clicked()
         }
     }
 
+
    for (int i = 0; i < 9; i++)
    {
        for (int j = 0; j < 9; j++)
        {
            QTableWidgetItem* Cell = ui->table_gamefield->item(i, j);
-           int b = SudokuRealMatrix[i][j];
+           //int b = SudokuRealMatrix[i][j];
+           int b = SudokuMaskMatrix[i][j];
            QString str = QString::number(b);
            Cell->setText(str);
        }
    }
-}
-
-void MainWindow::on_btn_reset_clicked()
-{
-    for (int i = 0; i < 9; ++i)
-    {
-        for (int j = 0; j < 9; ++j)
-        {
-            QTableWidgetItem* Cell = ui->table_gamefield->item(i, j);
-            QString str = "";
-            str = '0';
-            const QString cstr = str;
-            Cell->setText(cstr);
-        }
-    }
 }
 
 void MainWindow::on_btn_save_clicked()
@@ -275,11 +264,6 @@ void MainWindow::on_btn_load_clicked()
 
 }
 
-void MainWindow::on_btn_dif_set_clicked()
-{
-
-}
-
 void MainWindow::on_btn_solve_clicked()
 {
 
@@ -288,4 +272,40 @@ void MainWindow::on_btn_solve_clicked()
 void MainWindow::on_btn_close_clicked()
 {
     close();
+}
+
+void MainWindow::on_rbtn_easy_toggled(bool checked)
+{
+    if (checked == true)
+    {
+        easy = true;
+    }
+    else
+    {
+        easy = false;
+    }
+}
+
+void MainWindow::on_rbtn_normal_toggled(bool checked)
+{
+    if (checked == true)
+    {
+        normal = true;
+    }
+    else
+    {
+        normal = false;
+    }
+}
+
+void MainWindow::on_rbtn_hard_toggled(bool checked)
+{
+    if (checked == true)
+    {
+        hard = true;
+    }
+    else
+    {
+        hard = false;
+    }
 }

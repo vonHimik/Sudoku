@@ -103,8 +103,8 @@
    <widget class="QPushButton" name="btn_1">
     <property name="geometry">
      <rect>
-      <x>510</x>
-      <y>40</y>
+      <x>520</x>
+      <y>20</y>
       <width>50</width>
       <height>50</height>
      </rect>
@@ -116,8 +116,8 @@
    <widget class="QPushButton" name="btn_2">
     <property name="geometry">
      <rect>
-      <x>570</x>
-      <y>40</y>
+      <x>580</x>
+      <y>20</y>
       <width>50</width>
       <height>50</height>
      </rect>
@@ -129,8 +129,8 @@
    <widget class="QPushButton" name="btn_3">
     <property name="geometry">
      <rect>
-      <x>630</x>
-      <y>40</y>
+      <x>640</x>
+      <y>20</y>
       <width>50</width>
       <height>50</height>
      </rect>
@@ -142,8 +142,8 @@
    <widget class="QPushButton" name="btn_4">
     <property name="geometry">
      <rect>
-      <x>510</x>
-      <y>100</y>
+      <x>520</x>
+      <y>80</y>
       <width>50</width>
       <height>50</height>
      </rect>
@@ -155,8 +155,8 @@
    <widget class="QPushButton" name="btn_5">
     <property name="geometry">
      <rect>
-      <x>570</x>
-      <y>100</y>
+      <x>580</x>
+      <y>80</y>
       <width>50</width>
       <height>50</height>
      </rect>
@@ -168,8 +168,8 @@
    <widget class="QPushButton" name="btn_6">
     <property name="geometry">
      <rect>
-      <x>630</x>
-      <y>100</y>
+      <x>640</x>
+      <y>80</y>
       <width>50</width>
       <height>50</height>
      </rect>
@@ -181,8 +181,8 @@
    <widget class="QPushButton" name="btn_7">
     <property name="geometry">
      <rect>
-      <x>510</x>
-      <y>160</y>
+      <x>520</x>
+      <y>140</y>
       <width>50</width>
       <height>50</height>
      </rect>
@@ -194,8 +194,8 @@
    <widget class="QPushButton" name="btn_8">
     <property name="geometry">
      <rect>
-      <x>570</x>
-      <y>160</y>
+      <x>580</x>
+      <y>140</y>
       <width>50</width>
       <height>50</height>
      </rect>
@@ -207,8 +207,8 @@
    <widget class="QPushButton" name="btn_9">
     <property name="geometry">
      <rect>
-      <x>630</x>
-      <y>160</y>
+      <x>640</x>
+      <y>140</y>
       <width>50</width>
       <height>50</height>
      </rect>
@@ -233,8 +233,8 @@
    <widget class="QPushButton" name="btn_solve">
     <property name="geometry">
      <rect>
-      <x>600</x>
-      <y>290</y>
+      <x>610</x>
+      <y>210</y>
       <width>93</width>
       <height>28</height>
      </rect>
@@ -243,24 +243,11 @@
      <string>Solve</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="btn_reset">
-    <property name="geometry">
-     <rect>
-      <x>600</x>
-      <y>230</y>
-      <width>93</width>
-      <height>28</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Reset</string>
-    </property>
-   </widget>
    <widget class="QPushButton" name="btn_save">
     <property name="geometry">
      <rect>
-      <x>500</x>
-      <y>260</y>
+      <x>510</x>
+      <y>240</y>
       <width>93</width>
       <height>28</height>
      </rect>
@@ -272,8 +259,8 @@
    <widget class="QPushButton" name="btn_load">
     <property name="geometry">
      <rect>
-      <x>600</x>
-      <y>260</y>
+      <x>610</x>
+      <y>240</y>
       <width>93</width>
       <height>28</height>
      </rect>
@@ -282,29 +269,11 @@
      <string>Load from file</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="btn_dif_set">
-    <property name="geometry">
-     <rect>
-      <x>500</x>
-      <y>290</y>
-      <width>93</width>
-      <height>28</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <pointsize>6</pointsize>
-     </font>
-    </property>
-    <property name="text">
-     <string>Difficulty settings</string>
-    </property>
-   </widget>
    <widget class="QPushButton" name="btn_close">
     <property name="geometry">
      <rect>
-      <x>550</x>
-      <y>340</y>
+      <x>560</x>
+      <y>380</y>
       <width>93</width>
       <height>28</height>
      </rect>
@@ -316,8 +285,8 @@
    <widget class="QPushButton" name="btn_newgame">
     <property name="geometry">
      <rect>
-      <x>500</x>
-      <y>230</y>
+      <x>510</x>
+      <y>210</y>
       <width>93</width>
       <height>28</height>
      </rect>
@@ -1411,6 +1380,61 @@
      <set>Qt::AlignCenter</set>
     </property>
    </widget>
+   <widget class="QGroupBox" name="grBox_difficult">
+    <property name="geometry">
+     <rect>
+      <x>560</x>
+      <y>280</y>
+      <width>101</width>
+      <height>80</height>
+     </rect>
+    </property>
+    <property name="title">
+     <string>Difficult:</string>
+    </property>
+    <widget class="QRadioButton" name="rbtn_easy">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>20</y>
+       <width>95</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Easy</string>
+     </property>
+     <property name="checked">
+      <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="QRadioButton" name="rbtn_normal">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>40</y>
+       <width>95</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Normal</string>
+     </property>
+    </widget>
+    <widget class="QRadioButton" name="rbtn_hard">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>60</y>
+       <width>95</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Hard</string>
+     </property>
+    </widget>
+   </widget>
    <zorder>btn_1</zorder>
    <zorder>btn_2</zorder>
    <zorder>btn_3</zorder>
@@ -1422,10 +1446,8 @@
    <zorder>btn_9</zorder>
    <zorder>label</zorder>
    <zorder>btn_solve</zorder>
-   <zorder>btn_reset</zorder>
    <zorder>btn_save</zorder>
    <zorder>btn_load</zorder>
-   <zorder>btn_dif_set</zorder>
    <zorder>btn_close</zorder>
    <zorder>btn_newgame</zorder>
    <zorder>label_2</zorder>
@@ -1452,6 +1474,7 @@
    <zorder>label_18</zorder>
    <zorder>label_19</zorder>
    <zorder>label_20</zorder>
+   <zorder>grBox_difficult</zorder>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">

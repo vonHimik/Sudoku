@@ -29,20 +29,24 @@ private slots:
     void on_btn_7_clicked();
     void on_btn_8_clicked();
     void on_btn_9_clicked();
+
     void on_table_gamefield_cellClicked(int row, int column);
 
     void on_btn_newgame_clicked();
-    void on_btn_reset_clicked();
     void on_btn_save_clicked();
     void on_btn_load_clicked();
-    void on_btn_dif_set_clicked();
     void on_btn_solve_clicked();
-
     void on_btn_close_clicked();
+
+    void on_rbtn_easy_toggled(bool checked);
+    void on_rbtn_normal_toggled(bool checked);
+    void on_rbtn_hard_toggled(bool checked);
 
 private:
     Ui::MainWindow *ui;
     int Column, Row;
+    bool easy, normal, hard;
+
     void click_on_btn(int num);
 };
 
