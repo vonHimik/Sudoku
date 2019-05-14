@@ -1,9 +1,12 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include <cstdio>
-#include <iostream>
 #include <algorithm>
 #include <vector>
+#include <iostream>
+#include <fstream>
+#include <iomanip>
+#include <locale>
 
 using namespace std;
 
@@ -19,20 +22,7 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-const int SIZE = 9;
-int SudokuRealMatrix[SIZE][SIZE];
-int SudokuMaskMatrix[SIZE][SIZE];
-int ArrayForTests[SIZE*SIZE][SIZE] = {0};
-
-bool CheckRow (int x, int y);
-bool CheckColumn (int x, int y);
-bool CheckSquare (int x, int y);
-bool Test (int i, int j);
-bool CheckRepeated (int i, int j);
-void MoveBack (int& i, int& j);
-void WriteInMatrix (int i, int j);
-
-bool CheckRow (int x, int y)
+bool MainWindow::CheckRow (int x, int y)
 {
     for (int i = 0; i < y; i++)
     {
@@ -45,7 +35,7 @@ bool CheckRow (int x, int y)
     return true;
 }
 
-bool CheckColumn (int x, int y)
+bool MainWindow::CheckColumn (int x, int y)
 {
     for (int i = 0; i < x; i++)
     {
@@ -58,7 +48,7 @@ bool CheckColumn (int x, int y)
     return true;
 }
 
-bool CheckSquare (int x, int y)
+bool MainWindow::CheckSquare (int x, int y)
 {
     int i_start = x/3;
     int j_start = y/3;
@@ -85,7 +75,7 @@ bool CheckSquare (int x, int y)
     return true;
 }
 
-bool Test (int i, int j)
+bool MainWindow::Test (int i, int j)
 {
     int current = i * 9 + j + 1;
 
@@ -100,7 +90,7 @@ bool Test (int i, int j)
     return false;
 }
 
-bool CheckRepeated (int i, int j)
+bool MainWindow::CheckRepeated (int i, int j)
 {
     int value = SudokuRealMatrix[i][j];
     int current = i * 9 + j + 1;
@@ -115,7 +105,7 @@ bool CheckRepeated (int i, int j)
     }
 }
 
-void MoveBack (int& i, int& j)
+void MainWindow::MoveBack (int& i, int& j)
 {
     int current = i * 9 + j + 1;
 
@@ -135,11 +125,72 @@ void MoveBack (int& i, int& j)
     }
 }
 
-void WriteInMatrix (int i, int j)
+void MainWindow::WriteInMatrix (int i, int j)
 {
     int current = i * 9 + j + 1;
     int value = SudokuRealMatrix[i][j];
     ArrayForTests[current][value] = 1;
+}
+
+void MainWindow::CreateMask()
+{
+    int i;
+    int j;
+    int changeCounter;
+    int random;
+
+    if (easy)
+    {
+        changeCounter = 15;
+    }
+    else if (normal)
+    {
+        changeCounter = 35;
+    }
+    else if (hard)
+    {
+        changeCounter = 55;
+    }
+
+    while (changeCounter > 0)
+    {
+        for (i = 0; i < 9; i++)
+        {
+            for (j = 0; j < 9; j++)
+            {
+                random = rand()%10+1;
+
+                if (random < 3)
+                {
+                    SudokuMaskMatrix[i][j] = 0;
+                    changeCounter--;
+                }
+            }
+        }
+    }
+}
+
+void MainWindow::WinControl()
+{
+    int i;
+    int j;
+    bool win = true;
+
+    for (i = 0; i < 9; i++)
+    {
+        for (j = 0; j < 9; j++)
+        {
+            if (SudokuRealMatrix[i][j] != SudokuMaskMatrix[i][j])
+            {
+                win = false;
+            }
+        }
+    }
+
+    if (win)
+    {
+        ui->label->setText("WIN!");
+    }
 }
 
 void MainWindow::click_on_btn(int num)
@@ -147,6 +198,8 @@ void MainWindow::click_on_btn(int num)
     QTableWidgetItem* Cell = ui->table_gamefield->item(Row, Column);
     QString str = QString::number(num);
     Cell->setText(str);
+    SudokuMaskMatrix[Row][Column] = num;
+    WinControl();
 }
 
 void MainWindow::on_btn_1_clicked()
@@ -223,7 +276,7 @@ void MainWindow::on_btn_newgame_clicked()
                 }
 
                 SudokuRealMatrix[i][j] = rand()%9+1;
-                SudokuMaskMatrix [i][j] = SudokuRealMatrix [i][j];
+                SudokuMaskMatrix[i][j] = SudokuRealMatrix[i][j];
 
                 if (CheckRepeated (i, j))
                 {
@@ -240,15 +293,28 @@ void MainWindow::on_btn_newgame_clicked()
         }
     }
 
+    CreateMask();
+
 
    for (int i = 0; i < 9; i++)
    {
        for (int j = 0; j < 9; j++)
        {
            QTableWidgetItem* Cell = ui->table_gamefield->item(i, j);
-           //int b = SudokuRealMatrix[i][j];
            int b = SudokuMaskMatrix[i][j];
-           QString str = QString::number(b);
+           QString str;
+
+           if (b == 0)
+           {
+               str = ' ';
+               Cell->setBackgroundColor(Qt::white);
+           }
+           else
+           {
+               str = QString::number(b);
+               Cell->setBackgroundColor(Qt::gray);
+           }
+
            Cell->setText(str);
        }
    }
@@ -257,16 +323,92 @@ void MainWindow::on_btn_newgame_clicked()
 void MainWindow::on_btn_save_clicked()
 {
 
+    ofstream infile("d:/SudokuSaveFile.txt");
+    infile.is_open();
+
+    for (int i = 0; i < 9; i++)
+    {
+        for (int j = 0; j < 9; j++)
+        {
+            infile << SudokuMaskMatrix[i][j] << " ";
+
+            if (j == 8)
+            {
+                infile << endl;
+            }
+        }
+    }
+
+    infile.close();
 }
 
 void MainWindow::on_btn_load_clicked()
-{
+{   
+    std::ifstream input("d:/SudokuSaveFile.txt");
 
+    int **matrix = new int *[9];
+
+    for (unsigned i = 0; i < 9; i++)
+    {
+        matrix[i] = new int [9];
+
+        for (unsigned j = 0; j < 9; j++)
+        {
+            input >> matrix[i][j];
+        }
+    }
+
+    input.close();
+
+    for (int i = 0; i < 9; i++)
+    {
+        for (int j = 0; j < 9; j++)
+        {
+            SudokuMaskMatrix[i][j] = matrix[i][j];
+        }
+    }
+
+
+
+    for (int i = 0; i < 9; i++)
+    {
+        for (int j = 0; j < 9; j++)
+        {
+            QTableWidgetItem* Cell = ui->table_gamefield->item(i, j);
+            int b = SudokuMaskMatrix[i][j];
+            QString str;
+
+            if (b == 0)
+            {
+                str = ' ';
+                Cell->setBackgroundColor(Qt::white);
+            }
+            else
+            {
+                str = QString::number(b);
+                Cell->setBackgroundColor(Qt::gray);
+            }
+
+            Cell->setText(str);
+        }
+    }
 }
 
 void MainWindow::on_btn_solve_clicked()
 {
+    for (int i = 0; i < 9; i++)
+    {
+        for (int j = 0; j < 9; j++)
+        {
+            QTableWidgetItem* Cell = ui->table_gamefield->item(i, j);
+            int b = SudokuRealMatrix[i][j];
+            QString str;
 
+            str = QString::number(b);
+
+            Cell->setText(str);
+        }
+    }
 }
 
 void MainWindow::on_btn_close_clicked()
