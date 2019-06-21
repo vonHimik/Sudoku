@@ -1,4 +1,4 @@
-#include "SudokuPuzzle.h"
+#include "mainwindow.h"
 #include "ui_mainwindow.h"
 
 using namespace std;
@@ -238,6 +238,52 @@ void Generator::MoveBack (int& i, int& j)
     }
 }
 
+// Method to return to the previous cell.
+void Solver::MoveBackSolver (int& i, int& j)
+{
+    // If the search for a solution lasts too long, then it makes sense to stop it and start a new, randomly provide different initial values,
+    //    which can lead to a more rapid achievement of the solution, since the difficult situation will be eliminated.
+    if (gameMaster.solver.backStepCounter > 150)
+    {
+        gameMaster.solver.backStepCounter = 0;
+        gameMaster.generator.ArrayForTestsClearing();
+
+        for (int i = 0; i < 9; i++)
+        {
+            for (int j = 0; j < 9; j++)
+            {
+                if (gameMaster.maskMatrix.storage[i][j].editable == true)
+                {
+                    gameMaster.maskMatrix.storage[i][j].value = 0;
+                }
+            }
+        }
+
+        MainWindow().on_btn_save_clicked();
+        MainWindow().on_btn_newgame_clicked();
+        MainWindow().on_btn_load_clicked();
+        MainWindow().on_btn_solve_clicked();
+        MainWindow().WinControl();
+    }
+    else
+    {
+        // The sequence number of the current cell in the test array.
+        int current = i * 9 + j + 1;
+
+        // We are going through the list of checked values of the current cell.
+        for (int x = 1; x <= 9; x++)
+        {
+            // We bring it to the original appearance.
+            gameMaster.arrayForTests[current][x] = 0;
+        }
+
+        i = gameMaster.solver.coordinates.back().row;
+        j = gameMaster.solver.coordinates.back().column;
+
+        gameMaster.solver.coordinates.pop_back();
+    }
+}
+
 // A method that writes to the test array that a certain value has been assigned to the current cell.
 void Generator::WriteInArrayForTesting (int i, int j)
 {
@@ -291,11 +337,11 @@ void Generator::CreateMask()
     }
     else if (gameMaster.gameSettings.normal)
     {
-        changeCounter = 35;
+        changeCounter = 25;
     }
     else if (gameMaster.gameSettings.hard)
     {
-        changeCounter = 55;
+        changeCounter = 35;
     }
 
     // We pass through the matrix, randomly hiding the required number of cells.
@@ -605,11 +651,13 @@ void MainWindow::on_btn_solve_clicked()
                     if (!gameMaster.generator.AllValuesChecking (i, j))
                     {
                         // If yes, then go back.
-                        gameMaster.generator.MoveBack(i,j);
+                        gameMaster.solver.MoveBackSolver(i,j);
+                        gameMaster.solver.backStepCounter++;
                     }
 
                     // We select a random value for the current cell.
                     gameMaster.maskMatrix.storage[i][j].value = rand()%9+1;
+                    gameMaster.maskMatrix.storage[i][j].editable = true;
 
                     // Remember that it is verified.
                     gameMaster.solver.WriteInArrayForTestingSolver (i, j);
@@ -617,6 +665,13 @@ void MainWindow::on_btn_solve_clicked()
                     // And check for matches in the block, row and column.
                     if (gameMaster.solver.CheckBlockSolver(i,j) && gameMaster.solver.CheckRowSolver(i,j) && gameMaster.solver.CheckColumnSolver(i,j))
                     {
+                        // Add the coordinates of this cell to the stack with the coordinates of the solved cells.
+                        Coordinate coordinate;
+                        coordinate.row = i;
+                        coordinate.column = j;
+
+                        gameMaster.solver.coordinates.push_back(coordinate);
+
                         // If there is no match, go to the next cell.
                         break;
                     }

@@ -26,13 +26,20 @@ CONFIG += c++11
 
 SOURCES += \
         main.cpp \
-    SudokuPuzzle.cpp
+    mainwindow.cpp
 
 HEADERS += \
-    SudokuPuzzle.h
+    cell.h \
+    matrix.h \
+    generator.h \
+    coordinate.h \
+    solver.h \
+    gamesettings.h \
+    gamemaster.h \
+    mainwindow.h
 
 FORMS += \
-    SudokuPuzzle.ui
+    mainwindow.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
