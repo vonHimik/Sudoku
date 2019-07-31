@@ -3,6 +3,8 @@
 
 using namespace std;
 
+const int DIMENSION = 9;
+
 // For the program to work properly, we must create an instance of the game master.
 GameMaster gameMaster;
 
@@ -40,7 +42,7 @@ bool Generator::CheckRow (int x, int y)
 // When checking, it ignores the cell that called it.
 bool Solver::CheckRowSolver(int x, int y)
 {
-    for (int i = 0; i < 9; i++)
+    for (int i = 0; i < DIMENSION; i++)
     {
         if (i != y)
         {
@@ -76,7 +78,7 @@ bool Generator::CheckColumn (int x, int y)
 // When checking, it ignores the cell that called it.
 bool Solver::CheckColumnSolver (int x, int y)
 {
-    for (int i = 0; i < 9; i++)
+    for (int i = 0; i < DIMENSION; i++)
     {
         if (i != x)
         {
@@ -157,10 +159,10 @@ bool Solver::CheckBlockSolver (int x, int y)
 bool Generator::AllValuesChecking (int i, int j)
 {
     // The sequence number of the tested cell in the test array.
-    int current = i * 9 + j + 1;
+    int current = i * DIMENSION + j + 1;
 
     // We pass through the subarray representing the list of possible values of this cell.
-    for (int x = 1; x < 9; x++)
+    for (int x = 1; x < DIMENSION; x++)
     {
         // If we find an empty field in this subarray.
         if (gameMaster.arrayForTests[current][x] == 0)
@@ -181,7 +183,7 @@ bool Generator::CheckRepeated (int i, int j)
     int value = gameMaster.realMatrix.storage[i][j].value;
 
     // Sequence number of the current cell in the test array.
-    int current = i * 9 + j + 1;
+    int current = i * DIMENSION + j + 1;
 
     // If this value has already been written to the matrix and checked.
     if (gameMaster.arrayForTests[current][value] == 1)
@@ -199,7 +201,7 @@ bool Solver::CheckRepeatedSolver (int i, int j)
 {
     int value = gameMaster.maskMatrix.storage[i][j].value;
 
-    int current = i * 9 + j + 1;
+    int current = i * DIMENSION + j + 1;
 
     if (gameMaster.arrayForTests[current][value] == 1)
     {
@@ -215,10 +217,10 @@ bool Solver::CheckRepeatedSolver (int i, int j)
 void Generator::MoveBack (int& i, int& j)
 {
     // The sequence number of the current cell in the test array.
-    int current = i * 9 + j + 1;
+    int current = i * DIMENSION + j + 1;
 
     // We are going through the list of checked values of the current cell.
-    for (int x = 1; x <= 9; x++)
+    for (int x = 1; x <= DIMENSION; x++)
     {
         // We bring it to the original appearance.
         gameMaster.arrayForTests[current][x] = 0;
@@ -229,7 +231,7 @@ void Generator::MoveBack (int& i, int& j)
     {
         // Then go to the previous column of the last row.
         i--;
-        j = 8;
+        j = DIMENSION - 1;
     }
     // Otherwise, we return to the previous row (and the same column).
     else
@@ -248,9 +250,9 @@ void Solver::MoveBackSolver (int& i, int& j)
         gameMaster.solver.backStepCounter = 0;
         gameMaster.generator.ArrayForTestsClearing();
 
-        for (int i = 0; i < 9; i++)
+        for (int i = 0; i < DIMENSION; i++)
         {
-            for (int j = 0; j < 9; j++)
+            for (int j = 0; j < DIMENSION; j++)
             {
                 if (gameMaster.maskMatrix.storage[i][j].editable == true)
                 {
@@ -268,10 +270,10 @@ void Solver::MoveBackSolver (int& i, int& j)
     else
     {
         // The sequence number of the current cell in the test array.
-        int current = i * 9 + j + 1;
+        int current = i * DIMENSION + j + 1;
 
         // We are going through the list of checked values of the current cell.
-        for (int x = 1; x <= 9; x++)
+        for (int x = 1; x <= DIMENSION; x++)
         {
             // We bring it to the original appearance.
             gameMaster.arrayForTests[current][x] = 0;
@@ -288,7 +290,7 @@ void Solver::MoveBackSolver (int& i, int& j)
 void Generator::WriteInArrayForTesting (int i, int j)
 {
     // The sequence number of the current cell in the test array.
-    int current = i * 9 + j + 1;
+    int current = i * DIMENSION + j + 1;
 
     // Current cell value.
     int value = gameMaster.realMatrix.storage[i][j].value;
@@ -300,7 +302,7 @@ void Generator::WriteInArrayForTesting (int i, int j)
 // Option method above to solve the puzzle. We use not a real matrix, but a mask matrix.
 void Solver::WriteInArrayForTestingSolver (int i, int j)
 {
-    int current = i * 9 + j + 1;
+    int current = i * DIMENSION + j + 1;
 
     int value = gameMaster.maskMatrix.storage[i][j].value;
 
@@ -313,9 +315,9 @@ void Generator::ArrayForTestsClearing()
     int i;
     int j;
 
-    for (i = 1; i <= 81; i++)
+    for (i = 1; i <= DIMENSION * DIMENSION; i++)
     {
-        for (j = 1; j <= 9; j++)
+        for (j = 1; j <= DIMENSION; j++)
         {
             gameMaster.arrayForTests[i][j] = 0;
         }
@@ -347,9 +349,9 @@ void Generator::CreateMask()
     // We pass through the matrix, randomly hiding the required number of cells.
     while (changeCounter > 0)
     {
-        for (i = 0; i < 9; i++)
+        for (i = 0; i < DIMENSION; i++)
         {
-            for (j = 0; j < 9; j++)
+            for (j = 0; j < DIMENSION; j++)
             {
                 random = rand()%10+1;
 
@@ -371,9 +373,9 @@ void MainWindow::WinControl()
     bool win = true;
 
     // We check the compliance of the displayed matrix-masks (as amended by the player) to the matrix with the solution.
-    for (i = 0; i < 9; i++)
+    for (i = 0; i < DIMENSION; i++)
     {
-        for (j = 0; j < 9; j++)
+        for (j = 0; j < DIMENSION; j++)
         {
             if (gameMaster.realMatrix.storage[i][j].value != gameMaster.maskMatrix.storage[i][j].value)
             {
@@ -472,9 +474,9 @@ void MainWindow::on_btn_newgame_clicked()
     int j;
 
     // We pass through each cell of the matrix representing the playing field.
-    for (i = 0; i < 9; i++)
+    for (i = 0; i < DIMENSION; i++)
     {
-        for (j = 0; j < 9; j++)
+        for (j = 0; j < DIMENSION; j++)
         {
             // Infinite loop for a particular cell.
             for (;;)
@@ -518,9 +520,9 @@ void MainWindow::on_btn_newgame_clicked()
 
 
     // We display the generated puzzle on the screen.
-   for (int i = 0; i < 9; i++)
+   for (int i = 0; i < DIMENSION; i++)
    {
-       for (int j = 0; j < 9; j++)
+       for (int j = 0; j < DIMENSION; j++)
        {
            QTableWidgetItem* Cell = ui->table_gamefield->item(i, j);
            int value = gameMaster.maskMatrix.storage[i][j].value;
@@ -554,15 +556,15 @@ void MainWindow::on_btn_save_clicked()
     infile.is_open();
     
     // We pass on the matrix, which displays what is visible to the user.
-    for (int i = 0; i < 9; i++)
+    for (int i = 0; i < DIMENSION; i++)
     {
-        for (int j = 0; j < 9; j++)
+        for (int j = 0; j < DIMENSION; j++)
         {
             // Write from it to the file.
             infile << gameMaster.maskMatrix.storage[i][j].value << " ";
             
             // We move the carriage at the end of the row.
-            if (j == 8)
+            if (j == DIMENSION - 1)
             {
                 infile << endl;
             }
@@ -580,13 +582,13 @@ void MainWindow::on_btn_load_clicked()
     ifstream input("d:/SudokuSaveFile.txt");
 
     // We read its contents in the matrix.
-    int **matrix = new int *[9];
+    int **matrix = new int *[DIMENSION];
 
-    for (unsigned i = 0; i < 9; i++)
+    for (unsigned i = 0; i < DIMENSION; i++)
     {
-        matrix[i] = new int [9];
+        matrix[i] = new int [DIMENSION];
 
-        for (unsigned j = 0; j < 9; j++)
+        for (unsigned j = 0; j < DIMENSION; j++)
         {
             input >> matrix[i][j];
         }
@@ -596,9 +598,9 @@ void MainWindow::on_btn_load_clicked()
     input.close();
 
     // Save data from the resulting matrix in the game.
-    for (int i = 0; i < 9; i++)
+    for (int i = 0; i < DIMENSION; i++)
     {
-        for (int j = 0; j < 9; j++)
+        for (int j = 0; j < DIMENSION; j++)
         {
             gameMaster.maskMatrix.storage[i][j].value = matrix[i][j];
             gameMaster.realMatrix.storage[i][j].value = matrix[i][j];
@@ -606,9 +608,9 @@ void MainWindow::on_btn_load_clicked()
     }
 
     // Display.
-    for (int i = 0; i < 9; i++)
+    for (int i = 0; i < DIMENSION; i++)
     {
-        for (int j = 0; j < 9; j++)
+        for (int j = 0; j < DIMENSION; j++)
         {
             QTableWidgetItem* Cell = ui->table_gamefield->item(i, j);
             int value = gameMaster.maskMatrix.storage[i][j].value;
@@ -637,9 +639,9 @@ void MainWindow::on_btn_solve_clicked()
     int i;
     int j;
 
-    for (i = 0; i < 9; i++)
+    for (i = 0; i < DIMENSION; i++)
     {
-        for (j = 0; j < 9; j++)
+        for (j = 0; j < DIMENSION; j++)
         {
             // We pass through the matrix, applying to each cell an infinite loop.
             for (;;)
@@ -690,9 +692,9 @@ void MainWindow::on_btn_solve_clicked()
     }
 
     // We display the result on the screen.
-    for (int i = 0; i < 9; i++)
+    for (int i = 0; i < DIMENSION; i++)
     {
-        for (int j = 0; j < 9; j++)
+        for (int j = 0; j < DIMENSION; j++)
         {
             QTableWidgetItem* Cell = ui->table_gamefield->item(i, j);
             int value = gameMaster.maskMatrix.storage[i][j].value;
