@@ -6,8 +6,6 @@
 #include "solver.h"
 #include "matrix.h"
 
-const int ARRAY_DIMENSION = 9;
-
 // Class - game manager: stores the current information and instances of all used tools.
 class GameMaster
 {
@@ -25,7 +23,7 @@ public:
     Matrix maskMatrix;
 
     // Array for testing when generating sudoku.
-    int arrayForTests[ARRAY_DIMENSION*ARRAY_DIMENSION][ARRAY_DIMENSION] = {0};
+    int arrayForTests[Matrix::DIMENSION*Matrix::DIMENSION][Matrix::DIMENSION] = {0};
 };
 
 #endif // GAMEMASTER_H

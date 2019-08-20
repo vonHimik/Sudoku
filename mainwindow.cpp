@@ -3,8 +3,6 @@
 
 using namespace std;
 
-const int DIMENSION = 9;
-
 // For the program to work properly, we must create an instance of the game master.
 GameMaster gameMaster;
 
@@ -20,351 +18,6 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-// Method for checking the presence of the same value in the cell in the row, x and y - coordinates of the cell being checked.
-bool Generator::CheckRow (int x, int y)
-{
-    // We pass on the line to the cell called the method.
-    for (int i = 0; i < y; i++)
-    {
-        // If we meet a cell with the same value as in the checked cell.
-        if (gameMaster.realMatrix.storage[x][i].value == gameMaster.realMatrix.storage[x][y].value)
-        {
-            // That check failed.
-            return false;
-        }
-    }
-
-    // Otherwise, the test passed.
-    return true;
-}
-
-// Option method above to solve the puzzle. Differs in that it completely passes through the row.
-// When checking, it ignores the cell that called it.
-bool Solver::CheckRowSolver(int x, int y)
-{
-    for (int i = 0; i < DIMENSION; i++)
-    {
-        if (i != y)
-        {
-            if (gameMaster.maskMatrix.storage[x][i].value == gameMaster.maskMatrix.storage[x][y].value)
-            {
-                return false;
-            }
-        }
-    }
-
-    return true;
-}
-
-// Method for checking the presence of the same value in the cell in the column, x and y - coordinates of the cell being checked.
-bool Generator::CheckColumn (int x, int y)
-{
-    // We pass through the column to the checked cell.
-    for (int i = 0; i < x; i++)
-    {
-        // If we meet a cell with the same value as in the checked cell.
-        if (gameMaster.realMatrix.storage[i][y].value == gameMaster.realMatrix.storage[x][y].value)
-        {
-            // That check failedThat check failed.
-            return false;
-        }
-    }
-
-    // Otherwise, the test passed.
-    return true;
-}
-
-// Option method above to solve the puzzle. Differs in that it completely passes through the column.
-// When checking, it ignores the cell that called it.
-bool Solver::CheckColumnSolver (int x, int y)
-{
-    for (int i = 0; i < DIMENSION; i++)
-    {
-        if (i != x)
-        {
-            if (gameMaster.maskMatrix.storage[i][y].value == gameMaster.maskMatrix.storage[x][y].value)
-            {
-                return false;
-            }
-        }
-    }
-
-    return true;
-}
-
-// Method for checking the presence of the same value in a cell in a block of nine cells (3x3), x and y - coordinates of the cell being checked.
-bool Generator::CheckBlock (int x, int y)
-{
-    int i_start = x/3;
-    int j_start = y/3;
-
-    i_start *= 3;
-    j_start *= 3;
-
-    // Move around the block.
-    for (int i = i_start; i < i_start + 3; i++)
-    {
-        for (int j = j_start; j < j_start + 3; j++)
-        {
-            // Before the calling cell.
-            if (i == x && j == y)
-            {
-                return true;
-            }
-
-            // If in some other cell in the block the same number as in the one that we check.
-            if (gameMaster.realMatrix.storage[i][j].value == gameMaster.realMatrix.storage[x][y].value)
-            {
-                // That check failed.
-                return false;
-            }
-        }
-    }
-
-    // If the entire block passed and did not meet the matching value, then the test is successful.
-    return true;
-}
-
-// Option method above to solve the puzzle. Differs in that it completely passes through the block.
-// When checking, it ignores the cell that called it.
-bool Solver::CheckBlockSolver (int x, int y)
-{
-    int i_start = x/3;
-    int j_start = y/3;
-
-    i_start *= 3;
-    j_start *= 3;
-
-    for (int i = i_start; i < i_start + 3; i++)
-    {
-        for (int j = j_start; j < j_start + 3; j++)
-        {
-            if (i == x && j == y)
-            {
-            }
-            else
-            {
-                if (gameMaster.maskMatrix.storage[i][j].value == gameMaster.maskMatrix.storage[x][y].value)
-                {
-                    return false;
-                }
-            }
-        }
-    }
-
-    return true;
-}
-
-// Method to check if all possible values were checked for this cell.
-bool Generator::AllValuesChecking (int i, int j)
-{
-    // The sequence number of the tested cell in the test array.
-    int current = i * DIMENSION + j + 1;
-
-    // We pass through the subarray representing the list of possible values of this cell.
-    for (int x = 1; x < DIMENSION; x++)
-    {
-        // If we find an empty field in this subarray.
-        if (gameMaster.arrayForTests[current][x] == 0)
-        {
-            // This means that not all possible values have been checked.
-            return true;
-        }
-    }
-
-    // If there is no empty cell in the subarray, then all possible values for this cell have been checked.
-    return false;
-}
-
-// A method that detects whether a cell has been checked for its current value.
-bool Generator::CheckRepeated (int i, int j)
-{
-    // Current cell value.
-    int value = gameMaster.realMatrix.storage[i][j].value;
-
-    // Sequence number of the current cell in the test array.
-    int current = i * DIMENSION + j + 1;
-
-    // If this value has already been written to the matrix and checked.
-    if (gameMaster.arrayForTests[current][value] == 1)
-    {
-        return true;
-    }
-    else
-    {
-        return false;
-    }
-}
-
-// Option method above to solve the puzzle. We check not a real matrix, but a mask matrix.
-bool Solver::CheckRepeatedSolver (int i, int j)
-{
-    int value = gameMaster.maskMatrix.storage[i][j].value;
-
-    int current = i * DIMENSION + j + 1;
-
-    if (gameMaster.arrayForTests[current][value] == 1)
-    {
-        return true;
-    }
-    else
-    {
-        return false;
-    }
-}
-
-// Method to return to the previous cell.
-void Generator::MoveBack (int& i, int& j)
-{
-    // The sequence number of the current cell in the test array.
-    int current = i * DIMENSION + j + 1;
-
-    // We are going through the list of checked values of the current cell.
-    for (int x = 1; x <= DIMENSION; x++)
-    {
-        // We bring it to the original appearance.
-        gameMaster.arrayForTests[current][x] = 0;
-    }
-
-    // If it was the first line.
-    if (j < 1)
-    {
-        // Then go to the previous column of the last row.
-        i--;
-        j = DIMENSION - 1;
-    }
-    // Otherwise, we return to the previous row (and the same column).
-    else
-    {
-        j--;
-    }
-}
-
-// Method to return to the previous cell.
-void Solver::MoveBackSolver (int& i, int& j)
-{
-    // If the search for a solution lasts too long, then it makes sense to stop it and start a new, randomly provide different initial values,
-    //    which can lead to a more rapid achievement of the solution, since the difficult situation will be eliminated.
-    if (gameMaster.solver.backStepCounter > 150)
-    {
-        gameMaster.solver.backStepCounter = 0;
-        gameMaster.generator.ArrayForTestsClearing();
-
-        for (int i = 0; i < DIMENSION; i++)
-        {
-            for (int j = 0; j < DIMENSION; j++)
-            {
-                if (gameMaster.maskMatrix.storage[i][j].editable == true)
-                {
-                    gameMaster.maskMatrix.storage[i][j].value = 0;
-                }
-            }
-        }
-
-        MainWindow().on_btn_save_clicked();
-        MainWindow().on_btn_newgame_clicked();
-        MainWindow().on_btn_load_clicked();
-        MainWindow().on_btn_solve_clicked();
-        MainWindow().WinControl();
-    }
-    else
-    {
-        // The sequence number of the current cell in the test array.
-        int current = i * DIMENSION + j + 1;
-
-        // We are going through the list of checked values of the current cell.
-        for (int x = 1; x <= DIMENSION; x++)
-        {
-            // We bring it to the original appearance.
-            gameMaster.arrayForTests[current][x] = 0;
-        }
-
-        i = gameMaster.solver.coordinates.back().row;
-        j = gameMaster.solver.coordinates.back().column;
-
-        gameMaster.solver.coordinates.pop_back();
-    }
-}
-
-// A method that writes to the test array that a certain value has been assigned to the current cell.
-void Generator::WriteInArrayForTesting (int i, int j)
-{
-    // The sequence number of the current cell in the test array.
-    int current = i * DIMENSION + j + 1;
-
-    // Current cell value.
-    int value = gameMaster.realMatrix.storage[i][j].value;
-
-    // We mark in the corresponding current cell of the subarray that this value was checked.
-    gameMaster.arrayForTests[current][value] = 1;
-}
-
-// Option method above to solve the puzzle. We use not a real matrix, but a mask matrix.
-void Solver::WriteInArrayForTestingSolver (int i, int j)
-{
-    int current = i * DIMENSION + j + 1;
-
-    int value = gameMaster.maskMatrix.storage[i][j].value;
-
-    gameMaster.arrayForTests[current][value] = 1;
-}
-
-// Method clearing test array.
-void Generator::ArrayForTestsClearing()
-{
-    int i;
-    int j;
-
-    for (i = 1; i <= DIMENSION * DIMENSION; i++)
-    {
-        for (j = 1; j <= DIMENSION; j++)
-        {
-            gameMaster.arrayForTests[i][j] = 0;
-        }
-    }
-}
-
-// Method to create a mask-matrix.
-void Generator::CreateMask()
-{
-    int i;
-    int j;
-    int changeCounter; // The number of cells whose value will be unknown to the player.
-    int random;        // Variable for calculating the chance that the value of this cell will be hidden.
-
-    // We control the selected level of complexity and, depending on it, select the number of cells that we want to hide.
-    if (gameMaster.gameSettings.easy)
-    {
-        changeCounter = 15;
-    }
-    else if (gameMaster.gameSettings.normal)
-    {
-        changeCounter = 25;
-    }
-    else if (gameMaster.gameSettings.hard)
-    {
-        changeCounter = 35;
-    }
-
-    // We pass through the matrix, randomly hiding the required number of cells.
-    while (changeCounter > 0)
-    {
-        for (i = 0; i < DIMENSION; i++)
-        {
-            for (j = 0; j < DIMENSION; j++)
-            {
-                random = rand()%10+1;
-
-                if (random < 3)
-                {
-                    gameMaster.maskMatrix.storage[i][j].value = 0;
-                    changeCounter--;
-                }
-            }
-        }
-    }
-}
-
 // Method controlling the winning in the game.
 void MainWindow::WinControl()
 {
@@ -373,9 +26,9 @@ void MainWindow::WinControl()
     bool win = true;
 
     // We check the compliance of the displayed matrix-masks (as amended by the player) to the matrix with the solution.
-    for (i = 0; i < DIMENSION; i++)
+    for (i = 0; i < Matrix::DIMENSION; i++)
     {
-        for (j = 0; j < DIMENSION; j++)
+        for (j = 0; j < Matrix::DIMENSION; j++)
         {
             if (gameMaster.realMatrix.storage[i][j].value != gameMaster.maskMatrix.storage[i][j].value)
             {
@@ -474,18 +127,18 @@ void MainWindow::on_btn_newgame_clicked()
     int j;
 
     // We pass through each cell of the matrix representing the playing field.
-    for (i = 0; i < DIMENSION; i++)
+    for (i = 0; i < Matrix::DIMENSION; i++)
     {
-        for (j = 0; j < DIMENSION; j++)
+        for (j = 0; j < Matrix::DIMENSION; j++)
         {
-            // Infinite loop for a particular cell.
-            for (;;)
+            // Loop for a particular cell.
+            do
             {
                 // Check if all values were tested for the current cell.
-                if (!gameMaster.generator.AllValuesChecking (i, j))
+                if (!gameMaster.generator.AllValuesChecking (i, j, gameMaster))
                 {
                     // If yes, then go back.
-                    gameMaster.generator.MoveBack (i, j);
+                    gameMaster.generator.MoveBack (i, j, gameMaster);
                 }
 
                 // We select a random value for the current cell.
@@ -493,36 +146,31 @@ void MainWindow::on_btn_newgame_clicked()
                 gameMaster.maskMatrix.storage[i][j].value = gameMaster.realMatrix.storage[i][j].value;
 
                 // Check if it was checked before.
-                if (gameMaster.generator.CheckRepeated (i, j))
+                if (gameMaster.generator.CheckRepeated (i, j, gameMaster))
                 {
                     // If yes, then go to check the next random value (obviously, it did not fit) for this cell.
                     continue;
                 }
 
                 // Otherwise, remember that it is verified.
-                gameMaster.generator.WriteInArrayForTesting (i, j);
-
-                // And check for matches in the block, row and column.
-                if (gameMaster.generator.CheckBlock (i, j) && gameMaster.generator.CheckRow (i, j) && gameMaster.generator.CheckColumn (i, j))
-                {
-                    // If there is no match, go to the next cell.
-                    break;
-                }
+                gameMaster.generator.WriteInArrayForTesting (i, j, gameMaster);
             }
+            while (!gameMaster.generator.CheckBlock (i, j, gameMaster) || !gameMaster.generator.CheckRow (i, j, gameMaster)
+                   || !gameMaster.generator.CheckColumn (i, j, gameMaster));
         }
     }
 
     // Clear the test array.
-    gameMaster.generator.ArrayForTestsClearing();
+    gameMaster.generator.ArrayForTestsClearing(gameMaster);
 
     // Create a mask.
-    gameMaster.generator.CreateMask();
+    gameMaster.generator.CreateMask(gameMaster);
 
 
     // We display the generated puzzle on the screen.
-   for (int i = 0; i < DIMENSION; i++)
+   for (int i = 0; i < Matrix::DIMENSION; i++)
    {
-       for (int j = 0; j < DIMENSION; j++)
+       for (int j = 0; j < Matrix::DIMENSION; j++)
        {
            QTableWidgetItem* Cell = ui->table_gamefield->item(i, j);
            int value = gameMaster.maskMatrix.storage[i][j].value;
@@ -556,15 +204,15 @@ void MainWindow::on_btn_save_clicked()
     infile.is_open();
     
     // We pass on the matrix, which displays what is visible to the user.
-    for (int i = 0; i < DIMENSION; i++)
+    for (int i = 0; i < Matrix::DIMENSION; i++)
     {
-        for (int j = 0; j < DIMENSION; j++)
+        for (int j = 0; j < Matrix::DIMENSION; j++)
         {
             // Write from it to the file.
             infile << gameMaster.maskMatrix.storage[i][j].value << " ";
             
             // We move the carriage at the end of the row.
-            if (j == DIMENSION - 1)
+            if (j == Matrix::DIMENSION - 1)
             {
                 infile << endl;
             }
@@ -582,13 +230,13 @@ void MainWindow::on_btn_load_clicked()
     ifstream input("d:/SudokuSaveFile.txt");
 
     // We read its contents in the matrix.
-    int **matrix = new int *[DIMENSION];
+    int **matrix = new int *[Matrix::DIMENSION];
 
-    for (unsigned i = 0; i < DIMENSION; i++)
+    for (unsigned i = 0; i < Matrix::DIMENSION; i++)
     {
-        matrix[i] = new int [DIMENSION];
+        matrix[i] = new int [Matrix::DIMENSION];
 
-        for (unsigned j = 0; j < DIMENSION; j++)
+        for (unsigned j = 0; j < Matrix::DIMENSION; j++)
         {
             input >> matrix[i][j];
         }
@@ -598,9 +246,9 @@ void MainWindow::on_btn_load_clicked()
     input.close();
 
     // Save data from the resulting matrix in the game.
-    for (int i = 0; i < DIMENSION; i++)
+    for (int i = 0; i < Matrix::DIMENSION; i++)
     {
-        for (int j = 0; j < DIMENSION; j++)
+        for (int j = 0; j < Matrix::DIMENSION; j++)
         {
             gameMaster.maskMatrix.storage[i][j].value = matrix[i][j];
             gameMaster.realMatrix.storage[i][j].value = matrix[i][j];
@@ -608,9 +256,9 @@ void MainWindow::on_btn_load_clicked()
     }
 
     // Display.
-    for (int i = 0; i < DIMENSION; i++)
+    for (int i = 0; i < Matrix::DIMENSION; i++)
     {
-        for (int j = 0; j < DIMENSION; j++)
+        for (int j = 0; j < Matrix::DIMENSION; j++)
         {
             QTableWidgetItem* Cell = ui->table_gamefield->item(i, j);
             int value = gameMaster.maskMatrix.storage[i][j].value;
@@ -639,62 +287,52 @@ void MainWindow::on_btn_solve_clicked()
     int i;
     int j;
 
-    for (i = 0; i < DIMENSION; i++)
+    for (i = 0; i < Matrix::DIMENSION; i++)
     {
-        for (j = 0; j < DIMENSION; j++)
+        for (j = 0; j < Matrix::DIMENSION; j++)
         {
-            // We pass through the matrix, applying to each cell an infinite loop.
-            for (;;)
+            while (gameMaster.maskMatrix.storage[i][j].value == 0)
             {
-                // If this cell has no value.
-                if (gameMaster.maskMatrix.storage[i][j].value == 0)
+                // Check if all possible values were tested for the current cell.
+                if (!gameMaster.generator.AllValuesChecking (i, j, gameMaster))
                 {
-                    // Check if all possible values were tested for the current cell.
-                    if (!gameMaster.generator.AllValuesChecking (i, j))
-                    {
-                        // If yes, then go back.
-                        gameMaster.solver.MoveBackSolver(i,j);
-                        gameMaster.solver.backStepCounter++;
-                    }
-
-                    // We select a random value for the current cell.
-                    gameMaster.maskMatrix.storage[i][j].value = rand()%9+1;
-                    gameMaster.maskMatrix.storage[i][j].editable = true;
-
-                    // Remember that it is verified.
-                    gameMaster.solver.WriteInArrayForTestingSolver (i, j);
-
-                    // And check for matches in the block, row and column.
-                    if (gameMaster.solver.CheckBlockSolver(i,j) && gameMaster.solver.CheckRowSolver(i,j) && gameMaster.solver.CheckColumnSolver(i,j))
-                    {
-                        // Add the coordinates of this cell to the stack with the coordinates of the solved cells.
-                        Coordinate coordinate;
-                        coordinate.row = i;
-                        coordinate.column = j;
-
-                        gameMaster.solver.coordinates.push_back(coordinate);
-
-                        // If there is no match, go to the next cell.
-                        break;
-                    }
-
-                    // If the number does not fit, reset the value of the current cell in order not to go to the next one prematurely.
-                    gameMaster.maskMatrix.storage[i][j].value = 0;
+                    // If yes, then go back.
+                    gameMaster.solver.MoveBackSolver(i, j, gameMaster);
+                    gameMaster.solver.backStepCounter++;
                 }
-                // If the cell already has a value.
-                else
+
+                // We select a random value for the current cell.
+                gameMaster.maskMatrix.storage[i][j].value = rand()%9+1;
+                gameMaster.maskMatrix.storage[i][j].editable = true;
+
+                // Remember that it is verified.
+                gameMaster.solver.WriteInArrayForTestingSolver (i, j, gameMaster);
+
+                // And check for matches in the block, row and column.
+                if (gameMaster.solver.CheckBlockSolver(i, j, gameMaster) && gameMaster.solver.CheckRowSolver(i, j, gameMaster)
+                        && gameMaster.solver.CheckColumnSolver(i, j, gameMaster))
                 {
-                    // Then go to the next.
+                    // Add the coordinates of this cell to the stack with the coordinates of the solved cells.
+                    Coordinate coordinate;
+                    coordinate.row = i;
+                    coordinate.column = j;
+
+                    gameMaster.solver.coordinates.push_back(coordinate);
+
+                    // If there is no match, go to the next cell.
                     break;
                 }
+
+                // If the number does not fit, reset the value of the current cell in order not to go to the next one prematurely.
+                gameMaster.maskMatrix.storage[i][j].value = 0;
             }
         }
     }
 
     // We display the result on the screen.
-    for (int i = 0; i < DIMENSION; i++)
+    for (int i = 0; i < Matrix::DIMENSION; i++)
     {
-        for (int j = 0; j < DIMENSION; j++)
+        for (int j = 0; j < Matrix::DIMENSION; j++)
         {
             QTableWidgetItem* Cell = ui->table_gamefield->item(i, j);
             int value = gameMaster.maskMatrix.storage[i][j].value;
@@ -716,7 +354,7 @@ void MainWindow::on_btn_solve_clicked()
     }
 
     // Clear the test array.
-    gameMaster.generator.ArrayForTestsClearing();
+    gameMaster.generator.ArrayForTestsClearing(gameMaster);
 
     // We control the winnings.
     WinControl();
