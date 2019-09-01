@@ -1,7 +1,7 @@
 #include "gamemaster.h"
 
 // Method for checking the presence of the same value in the cell in the row, x and y - coordinates of the cell being checked.
-bool Generator::CheckRow (int x, int y, GameMaster &gameMaster)
+bool Generator::CheckRow (int x, int y, const GameMaster &gameMaster) const
 {
     // We pass on the line to the cell called the method.
     for (int i = 0; i < y; i++)
@@ -19,7 +19,7 @@ bool Generator::CheckRow (int x, int y, GameMaster &gameMaster)
 }
 
 // Method for checking the presence of the same value in the cell in the column, x and y - coordinates of the cell being checked.
-bool Generator::CheckColumn (int x, int y, GameMaster &gameMaster)
+bool Generator::CheckColumn (int x, int y, const GameMaster &gameMaster) const
 {
     // We pass through the column to the checked cell.
     for (int i = 0; i < x; i++)
@@ -37,7 +37,7 @@ bool Generator::CheckColumn (int x, int y, GameMaster &gameMaster)
 }
 
 // Method for checking the presence of the same value in a cell in a block of nine cells (3x3), x and y - coordinates of the cell being checked.
-bool Generator::CheckBlock (int x, int y, GameMaster &gameMaster)
+bool Generator::CheckBlock (int x, int y, const GameMaster &gameMaster) const
 {
     int i_start = x/3;
     int j_start = y/3;
@@ -70,7 +70,7 @@ bool Generator::CheckBlock (int x, int y, GameMaster &gameMaster)
 }
 
 // Method to check if all possible values were checked for this cell.
-bool Generator::AllValuesChecking (int i, int j, GameMaster &gameMaster)
+bool Generator::AllValuesChecking (int i, int j, const GameMaster &gameMaster) const
 {
     // The sequence number of the tested cell in the test array.
     int current = i * Matrix::DIMENSION + j + 1;
@@ -91,7 +91,7 @@ bool Generator::AllValuesChecking (int i, int j, GameMaster &gameMaster)
 }
 
 // A method that detects whether a cell has been checked for its current value.
-bool Generator::CheckRepeated (int i, int j, GameMaster &gameMaster)
+bool Generator::CheckRepeated (int i, int j, const GameMaster &gameMaster) const
 {
     // Current cell value.
     int value = gameMaster.realMatrix.storage[i][j].value;
@@ -153,12 +153,9 @@ void Generator::WriteInArrayForTesting (int i, int j, GameMaster &gameMaster)
 // Method clearing test array.
 void Generator::ArrayForTestsClearing(GameMaster &gameMaster)
 {
-    int i;
-    int j;
-
-    for (i = 1; i <= Matrix::DIMENSION * Matrix::DIMENSION; i++)
+    for (int i = 1; i <= Matrix::DIMENSION * Matrix::DIMENSION; i++)
     {
-        for (j = 1; j <= Matrix::DIMENSION; j++)
+        for (int j = 1; j <= Matrix::DIMENSION; j++)
         {
             gameMaster.arrayForTests[i][j] = 0;
         }
@@ -168,10 +165,7 @@ void Generator::ArrayForTestsClearing(GameMaster &gameMaster)
 // Method to create a mask-matrix.
 void Generator::CreateMask(GameMaster &gameMaster)
 {
-    int i;
-    int j;
-    int changeCounter; // The number of cells whose value will be unknown to the player.
-    int random;        // Variable for calculating the chance that the value of this cell will be hidden.
+    int changeCounter = 0; // The number of cells whose value will be unknown to the player.
 
     // We control the selected level of complexity and, depending on it, select the number of cells that we want to hide.
     if (gameMaster.gameSettings.easy)
@@ -190,11 +184,12 @@ void Generator::CreateMask(GameMaster &gameMaster)
     // We pass through the matrix, randomly hiding the required number of cells.
     while (changeCounter > 0)
     {
-        for (i = 0; i < Matrix::DIMENSION; i++)
+        for (int i = 0; i < Matrix::DIMENSION; i++)
         {
-            for (j = 0; j < Matrix::DIMENSION; j++)
+            for (int j = 0; j < Matrix::DIMENSION; j++)
             {
-                random = rand()%10+1;
+                // Variable for calculating the chance that the value of this cell will be hidden.
+                int random = rand()%10+1;
 
                 if (random < 3)
                 {
@@ -202,6 +197,17 @@ void Generator::CreateMask(GameMaster &gameMaster)
                     changeCounter--;
                 }
             }
+        }
+    }
+}
+
+void Generator::PlayFieldClearing(GameMaster &gameMaster)
+{
+    for (int i = 0; i < Matrix::DIMENSION; i++)
+    {
+        for (int j = 0; j < Matrix::DIMENSION; j++)
+        {
+            gameMaster.maskMatrix.storage[i][j].editable = true;
         }
     }
 }

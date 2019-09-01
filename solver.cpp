@@ -3,7 +3,7 @@
 
 // Option method above to solve the puzzle. Differs in that it completely passes through the row.
 // When checking, it ignores the cell that called it.
-bool Solver::CheckRowSolver(int x, int y, GameMaster &gameMaster)
+bool Solver::CheckRowSolver(int x, int y, const GameMaster &gameMaster) const
 {
     for (int i = 0; i < Matrix::DIMENSION; i++)
     {
@@ -21,7 +21,7 @@ bool Solver::CheckRowSolver(int x, int y, GameMaster &gameMaster)
 
 // Option method above to solve the puzzle. Differs in that it completely passes through the column.
 // When checking, it ignores the cell that called it.
-bool Solver::CheckColumnSolver (int x, int y, GameMaster &gameMaster)
+bool Solver::CheckColumnSolver (int x, int y, const GameMaster &gameMaster) const
 {
     for (int i = 0; i < Matrix::DIMENSION; i++)
     {
@@ -39,7 +39,7 @@ bool Solver::CheckColumnSolver (int x, int y, GameMaster &gameMaster)
 
 // Option method above to solve the puzzle. Differs in that it completely passes through the block.
 // When checking, it ignores the cell that called it.
-bool Solver::CheckBlockSolver (int x, int y, GameMaster &gameMaster)
+bool Solver::CheckBlockSolver (int x, int y, const GameMaster &gameMaster) const
 {
     int i_start = x/3;
     int j_start = y/3;
@@ -68,7 +68,7 @@ bool Solver::CheckBlockSolver (int x, int y, GameMaster &gameMaster)
 }
 
 // Option method above to solve the puzzle. We check not a real matrix, but a mask matrix.
-bool Solver::CheckRepeatedSolver (int i, int j, GameMaster &gameMaster)
+bool Solver::CheckRepeatedSolver (int i, int j, const GameMaster &gameMaster) const
 {
     int value = gameMaster.maskMatrix.storage[i][j].value;
 

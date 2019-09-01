@@ -21,14 +21,12 @@ MainWindow::~MainWindow()
 // Method controlling the winning in the game.
 void MainWindow::WinControl()
 {
-    int i;
-    int j;
     bool win = true;
 
     // We check the compliance of the displayed matrix-masks (as amended by the player) to the matrix with the solution.
-    for (i = 0; i < Matrix::DIMENSION; i++)
+    for (int i = 0; i < Matrix::DIMENSION; i++)
     {
-        for (j = 0; j < Matrix::DIMENSION; j++)
+        for (int j = 0; j < Matrix::DIMENSION; j++)
         {
             if (gameMaster.realMatrix.storage[i][j].value != gameMaster.maskMatrix.storage[i][j].value)
             {
@@ -57,6 +55,17 @@ void MainWindow::click_on_btn (int num)
         QString str = QString::number(num);
         Cell->setText(str);
         gameMaster.maskMatrix.storage[Row][Column].value = num;
+
+        // Validation of the entered number.
+        if (gameMaster.realMatrix.storage[Row][Column].value != num)
+        {
+            Cell->setBackgroundColor(Qt::red);
+        }
+        else
+        {
+            Cell->setBackgroundColor(Qt::white);
+        }
+
         WinControl();
     }
 }
@@ -123,13 +132,12 @@ void MainWindow::on_table_gamefield_cellClicked (int row, int column)
 // Method that generates a new puzzle.
 void MainWindow::on_btn_newgame_clicked()
 {
-    int i;
-    int j;
+    gameMaster.generator.PlayFieldClearing(gameMaster);
 
     // We pass through each cell of the matrix representing the playing field.
-    for (i = 0; i < Matrix::DIMENSION; i++)
+    for (int i = 0; i < Matrix::DIMENSION; i++)
     {
-        for (j = 0; j < Matrix::DIMENSION; j++)
+        for (int j = 0; j < Matrix::DIMENSION; j++)
         {
             // Loop for a particular cell.
             do
@@ -200,7 +208,7 @@ void MainWindow::on_btn_newgame_clicked()
 void MainWindow::on_btn_save_clicked()
 {
     // Open the file.
-    ofstream infile("d:/SudokuSaveFile.txt");
+    ofstream infile("SudokuSaveFile.txt");
     infile.is_open();
     
     // We pass on the matrix, which displays what is visible to the user.
@@ -227,7 +235,7 @@ void MainWindow::on_btn_save_clicked()
 void MainWindow::on_btn_load_clicked()
 {   
     // Open the file.
-    ifstream input("d:/SudokuSaveFile.txt");
+    ifstream input("SudokuSaveFile.txt");
 
     // We read its contents in the matrix.
     int **matrix = new int *[Matrix::DIMENSION];
@@ -284,12 +292,9 @@ void MainWindow::on_btn_load_clicked()
 // Method that solves the current puzzle.
 void MainWindow::on_btn_solve_clicked()
 {
-    int i;
-    int j;
-
-    for (i = 0; i < Matrix::DIMENSION; i++)
+    for (int i = 0; i < Matrix::DIMENSION; i++)
     {
-        for (j = 0; j < Matrix::DIMENSION; j++)
+        for (int j = 0; j < Matrix::DIMENSION; j++)
         {
             while (gameMaster.maskMatrix.storage[i][j].value == 0)
             {

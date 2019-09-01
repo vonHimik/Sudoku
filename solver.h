@@ -15,10 +15,10 @@ public:
     std::vector <Coordinate> coordinates;
     int backStepCounter;
 
-    bool CheckRowSolver (int x, int y, GameMaster &gameMaster);
-    bool CheckColumnSolver (int x, int y, GameMaster &gameMaster);
-    bool CheckBlockSolver (int x, int y, GameMaster &gameMaster);
-    bool CheckRepeatedSolver (int i, int j, GameMaster &gameMaster);
+    bool CheckRowSolver (int x, int y, const GameMaster &gameMaster) const;
+    bool CheckColumnSolver (int x, int y, const GameMaster &gameMaster) const;
+    bool CheckBlockSolver (int x, int y, const GameMaster &gameMaster) const;
+    bool CheckRepeatedSolver (int i, int j, const GameMaster &gameMaster) const;
     void MoveBackSolver (int &i, int &j, GameMaster &gameMaster);
     void WriteInArrayForTestingSolver (int i, int j, GameMaster &gameMaster);
 };

@@ -36,7 +36,7 @@ public:
 public slots:
 
     // The pattern processing method of pressing the button with the number.
-    void click_on_btn(int num);
+    void click_on_btn (int num);
 
     // Methods for processing the number buttons.
     void on_btn_1_clicked();
@@ -68,9 +68,9 @@ public slots:
     void on_btn_close_clicked();
 
     // Methods that handle pressing buttons that change difficult.
-    void on_rbtn_easy_toggled(bool checked);
-    void on_rbtn_normal_toggled(bool checked);
-    void on_rbtn_hard_toggled(bool checked);
+    void on_rbtn_easy_toggled (bool checked);
+    void on_rbtn_normal_toggled (bool checked);
+    void on_rbtn_hard_toggled (bool checked);
 
     // Method to control winnings.
     void WinControl();
