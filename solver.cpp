@@ -41,15 +41,20 @@ bool Solver::CheckColumnSolver (int x, int y, const GameMaster &gameMaster) cons
 // When checking, it ignores the cell that called it.
 bool Solver::CheckBlockSolver (int x, int y, const GameMaster &gameMaster) const
 {
-    int i_start = x/3;
-    int j_start = y/3;
+    // This method is called by one cell in a 3x3 block, but must check it all.
+    // Therefore, we transform the coordinates of the cell into the coordinates of the block, using division without a remainder.
+    // For example, cell (17) in row 0 (x) and column 8 (y) is in a block of rows 0-1-2 and columns 6-7-8.
+    // 1/3 = 0 and 8/3 = 2, 0 * 3 = 0 and 3 * 2 = 6.
+    // That is, we start checking the block in which the cell is located from the very beginning and
+    //    then we will move forward with a step of one three times to cover the entire block.
+    int i_start = x/Matrix::BLOCK_DIMENSION;
+    int j_start = y/Matrix::BLOCK_DIMENSION;
+    i_start *= Matrix::BLOCK_DIMENSION;
+    j_start *= Matrix::BLOCK_DIMENSION;
 
-    i_start *= 3;
-    j_start *= 3;
-
-    for (int i = i_start; i < i_start + 3; i++)
+    for (int i = i_start; i < i_start + Matrix::BLOCK_DIMENSION; i++)
     {
-        for (int j = j_start; j < j_start + 3; j++)
+        for (int j = j_start; j < j_start + Matrix::BLOCK_DIMENSION; j++)
         {
             if (i == x && j == y)
             {
@@ -72,7 +77,7 @@ bool Solver::CheckRepeatedSolver (int i, int j, const GameMaster &gameMaster) co
 {
     int value = gameMaster.maskMatrix.storage[i][j].value;
 
-    int current = i * Matrix::DIMENSION + j + 1;
+    int current = i * Matrix::DIMENSION + j + Generator::SHIFT;
 
     if (gameMaster.arrayForTests[current][value] == 1)
     {
@@ -89,7 +94,7 @@ void Solver::MoveBackSolver (int &i, int &j, GameMaster &gameMaster)
 {
     // If the search for a solution lasts too long, then it makes sense to stop it and start a new, randomly provide different initial values,
     //    which can lead to a more rapid achievement of the solution, since the difficult situation will be eliminated.
-    if (gameMaster.solver.backStepCounter > 150)
+    if (gameMaster.solver.backStepCounter > Solver::MAXIMUM_NUMBER_OF_STEPS_BACK)
     {
         gameMaster.solver.backStepCounter = 0;
         gameMaster.generator.ArrayForTestsClearing(gameMaster);
@@ -114,7 +119,7 @@ void Solver::MoveBackSolver (int &i, int &j, GameMaster &gameMaster)
     else
     {
         // The sequence number of the current cell in the test array.
-        int current = i * Matrix::DIMENSION + j + 1;
+        int current = i * Matrix::DIMENSION + j + Generator::SHIFT;
 
         // We are going through the list of checked values of the current cell.
         for (int x = 1; x <= Matrix::DIMENSION; x++)
@@ -133,7 +138,7 @@ void Solver::MoveBackSolver (int &i, int &j, GameMaster &gameMaster)
 // Option method above to solve the puzzle. We use not a real matrix, but a mask matrix.
 void Solver::WriteInArrayForTestingSolver (int i, int j, GameMaster &gameMaster)
 {
-    int current = i * Matrix::DIMENSION + j + 1;
+    int current = i * Matrix::DIMENSION + j + Generator::SHIFT;
 
     int value = gameMaster.maskMatrix.storage[i][j].value;
 

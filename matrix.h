@@ -8,6 +8,7 @@ class Matrix
 {
 public:
     static constexpr size_t DIMENSION = 9;
+    static constexpr size_t BLOCK_DIMENSION = 3;
     Cell storage[DIMENSION][DIMENSION];
 };
 

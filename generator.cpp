@@ -39,16 +39,21 @@ bool Generator::CheckColumn (int x, int y, const GameMaster &gameMaster) const
 // Method for checking the presence of the same value in a cell in a block of nine cells (3x3), x and y - coordinates of the cell being checked.
 bool Generator::CheckBlock (int x, int y, const GameMaster &gameMaster) const
 {
-    int i_start = x/3;
-    int j_start = y/3;
-
-    i_start *= 3;
-    j_start *= 3;
+    // This method is called by one cell in a 3x3 block, but must check it all.
+    // Therefore, we transform the coordinates of the cell into the coordinates of the block, using division without a remainder.
+    // For example, cell (17) in row 0 (x) and column 8 (y) is in a block of rows 0-1-2 and columns 6-7-8.
+    // 1/3 = 0 and 8/3 = 2, 0 * 3 = 0 and 3 * 2 = 6.
+    // That is, we start checking the block in which the cell is located from the very beginning and
+    //    then we will move forward with a step of one three times to cover the entire block.
+    int i_start = x/Matrix::BLOCK_DIMENSION;
+    int j_start = y/Matrix::BLOCK_DIMENSION;
+    i_start *= Matrix::BLOCK_DIMENSION;
+    j_start *= Matrix::BLOCK_DIMENSION;
 
     // Move around the block.
-    for (int i = i_start; i < i_start + 3; i++)
+    for (int i = i_start; i < i_start + Matrix::BLOCK_DIMENSION; i++)
     {
-        for (int j = j_start; j < j_start + 3; j++)
+        for (int j = j_start; j < j_start + Matrix::BLOCK_DIMENSION; j++)
         {
             // Before the calling cell.
             if (i == x && j == y)
@@ -73,7 +78,7 @@ bool Generator::CheckBlock (int x, int y, const GameMaster &gameMaster) const
 bool Generator::AllValuesChecking (int i, int j, const GameMaster &gameMaster) const
 {
     // The sequence number of the tested cell in the test array.
-    int current = i * Matrix::DIMENSION + j + 1;
+    int current = i * Matrix::DIMENSION + j + Generator::SHIFT;
 
     // We pass through the subarray representing the list of possible values of this cell.
     for (int x = 1; x < Matrix::DIMENSION; x++)
@@ -97,7 +102,7 @@ bool Generator::CheckRepeated (int i, int j, const GameMaster &gameMaster) const
     int value = gameMaster.realMatrix.storage[i][j].value;
 
     // Sequence number of the current cell in the test array.
-    int current = i * Matrix::DIMENSION + j + 1;
+    int current = i * Matrix::DIMENSION + j + Generator::SHIFT;
 
     // If this value has already been written to the matrix and checked.
     if (gameMaster.arrayForTests[current][value] == 1)
@@ -114,7 +119,7 @@ bool Generator::CheckRepeated (int i, int j, const GameMaster &gameMaster) const
 void Generator::MoveBack (int &i, int &j, GameMaster &gameMaster)
 {
     // The sequence number of the current cell in the test array.
-    int current = i * Matrix::DIMENSION + j + 1;
+    int current = i * Matrix::DIMENSION + j + Generator::SHIFT;
 
     // We are going through the list of checked values of the current cell.
     for (int x = 1; x <= Matrix::DIMENSION; x++)
@@ -141,7 +146,7 @@ void Generator::MoveBack (int &i, int &j, GameMaster &gameMaster)
 void Generator::WriteInArrayForTesting (int i, int j, GameMaster &gameMaster)
 {
     // The sequence number of the current cell in the test array.
-    int current = i * Matrix::DIMENSION + j + 1;
+    int current = i * Matrix::DIMENSION + j + Generator::SHIFT;
 
     // Current cell value.
     int value = gameMaster.realMatrix.storage[i][j].value;
@@ -170,15 +175,15 @@ void Generator::CreateMask(GameMaster &gameMaster)
     // We control the selected level of complexity and, depending on it, select the number of cells that we want to hide.
     if (gameMaster.gameSettings.easy)
     {
-        changeCounter = 15;
+        changeCounter = Generator::NUMBER_OF_HIDDEN_CELLS_ON_EASY_DIFFICULTY;
     }
     else if (gameMaster.gameSettings.normal)
     {
-        changeCounter = 25;
+        changeCounter = Generator::NUMBER_OF_HIDDEN_CELLS_ON_NORMAL_DIFFICULTY;
     }
     else if (gameMaster.gameSettings.hard)
     {
-        changeCounter = 35;
+        changeCounter = Generator::NUMBER_OF_HIDDEN_CELLS_ON_HARD_DIFFICULTY;
     }
 
     // We pass through the matrix, randomly hiding the required number of cells.
@@ -191,6 +196,7 @@ void Generator::CreateMask(GameMaster &gameMaster)
                 // Variable for calculating the chance that the value of this cell will be hidden.
                 int random = rand()%10+1;
 
+                // ~30%
                 if (random < 3)
                 {
                     gameMaster.maskMatrix.storage[i][j].value = 0;

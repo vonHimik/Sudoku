@@ -14,6 +14,7 @@ public:
 
     std::vector <Coordinate> coordinates;
     int backStepCounter;
+    static constexpr size_t MAXIMUM_NUMBER_OF_STEPS_BACK = 150;
 
     bool CheckRowSolver (int x, int y, const GameMaster &gameMaster) const;
     bool CheckColumnSolver (int x, int y, const GameMaster &gameMaster) const;
