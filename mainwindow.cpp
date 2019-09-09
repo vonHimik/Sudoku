@@ -57,7 +57,7 @@ void MainWindow::click_on_btn (int num)
         gameMaster.maskMatrix.storage[Row][Column].value = num;
 
         // Validation of the entered number.
-        if (gameMaster.realMatrix.storage[Row][Column].value != num)
+        if (gameMaster.realMatrix.storage[Row][Column].value != num && !loadFlag)
         {
             Cell->setBackgroundColor(Qt::red);
         }
@@ -133,6 +133,7 @@ void MainWindow::on_table_gamefield_cellClicked (int row, int column)
 void MainWindow::on_btn_newgame_clicked()
 {
     gameMaster.generator.PlayFieldClearing(gameMaster);
+    loadFlag = false;
 
     // We pass through each cell of the matrix representing the playing field.
     for (int i = 0; i < Matrix::DIMENSION; i++)
@@ -238,6 +239,9 @@ void MainWindow::on_btn_save_clicked()
 // Method, loading the state of the game from a text file.
 void MainWindow::on_btn_load_clicked()
 {
+    gameMaster.generator.PlayFieldClearing(gameMaster);
+    loadFlag = true;
+
     QString filename = QFileDialog::getOpenFileName(this, "Load Sudoku", "", "*.txt");
 
     // Open the file.

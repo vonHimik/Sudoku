@@ -35,6 +35,8 @@ public:
     int Column;
     int Row;
 
+    bool loadFlag = false;
+
 public slots:
 
     // The pattern processing method of pressing the button with the number.
