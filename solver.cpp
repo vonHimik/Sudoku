@@ -110,11 +110,7 @@ void Solver::MoveBackSolver (int &i, int &j, GameMaster &gameMaster)
             }
         }
 
-        MainWindow().on_btn_save_clicked();
-        MainWindow().on_btn_newgame_clicked();
-        MainWindow().on_btn_load_clicked();
-        MainWindow().on_btn_solve_clicked();
-        MainWindow().WinControl();
+          MainWindow().on_btn_solve_clicked();
     }
     else
     {

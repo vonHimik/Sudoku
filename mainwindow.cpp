@@ -207,9 +207,12 @@ void MainWindow::on_btn_newgame_clicked()
 // This method saves the current game state to a text file.
 void MainWindow::on_btn_save_clicked()
 {
+    QString filename = QFileDialog::getSaveFileName(this, "Save Sudoku", "", "*.txt");
+
     // Open the file.
-    ofstream infile("SudokuSaveFile.txt");
-    infile.is_open();
+    QFile fileOut(filename);
+    QTextStream writeStream(&fileOut);
+    fileOut.open(QIODevice::WriteOnly);
     
     // We pass on the matrix, which displays what is visible to the user.
     for (int i = 0; i < Matrix::DIMENSION; i++)
@@ -217,25 +220,30 @@ void MainWindow::on_btn_save_clicked()
         for (int j = 0; j < Matrix::DIMENSION; j++)
         {
             // Write from it to the file.
-            infile << gameMaster.maskMatrix.storage[i][j].value << " ";
+            writeStream << gameMaster.maskMatrix.storage[i][j].value << tr(" ");
             
             // We move the carriage at the end of the row.
             if (j == Matrix::DIMENSION - 1)
             {
-                infile << endl;
+                writeStream << tr("\r\n") << endl;
             }
         }
     }
 
     // Close the file.
-    infile.close();
+    writeStream.flush();
+    fileOut.close();
 }
 
 // Method, loading the state of the game from a text file.
 void MainWindow::on_btn_load_clicked()
-{   
+{
+    QString filename = QFileDialog::getOpenFileName(this, "Load Sudoku", "", "*.txt");
+
     // Open the file.
-    ifstream input("SudokuSaveFile.txt");
+    QFile fileIn(filename);
+    QTextStream readStream(&fileIn);
+    fileIn.open(QIODevice::ReadOnly);
 
     // We read its contents in the matrix.
     int **matrix = new int *[Matrix::DIMENSION];
@@ -246,12 +254,12 @@ void MainWindow::on_btn_load_clicked()
 
         for (unsigned j = 0; j < Matrix::DIMENSION; j++)
         {
-            input >> matrix[i][j];
+            readStream >> matrix[i][j];
         }
     }
 
     // Close the file.
-    input.close();
+    fileIn.close();
 
     // Save data from the resulting matrix in the game.
     for (int i = 0; i < Matrix::DIMENSION; i++)

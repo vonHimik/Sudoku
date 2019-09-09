@@ -10,6 +10,8 @@
 #include "gamemaster.h"
 
 #include <QMainWindow>
+#include <QFileDialog>
+#include <QTextStream>
 #include <fstream>
 
 namespace Ui
