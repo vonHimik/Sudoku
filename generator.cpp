@@ -173,15 +173,15 @@ void Generator::CreateMask(GameMaster &gameMaster)
     int changeCounter = 0; // The number of cells whose value will be unknown to the player.
 
     // We control the selected level of complexity and, depending on it, select the number of cells that we want to hide.
-    if (gameMaster.gameSettings.easy)
+    if (gameMaster.gameSettings.difficult == gameMaster.gameSettings.easy)
     {
         changeCounter = Generator::NUMBER_OF_HIDDEN_CELLS_ON_EASY_DIFFICULTY;
     }
-    else if (gameMaster.gameSettings.normal)
+    else if (gameMaster.gameSettings.difficult == gameMaster.gameSettings.normal)
     {
         changeCounter = Generator::NUMBER_OF_HIDDEN_CELLS_ON_NORMAL_DIFFICULTY;
     }
-    else if (gameMaster.gameSettings.hard)
+    else if (gameMaster.gameSettings.difficult == gameMaster.gameSettings.hard)
     {
         changeCounter = Generator::NUMBER_OF_HIDDEN_CELLS_ON_HARD_DIFFICULTY;
     }

@@ -5,10 +5,16 @@
 class GameSettings
 {
 public:
-    // Boolean variables for difficulty level
-    bool easy = true;
-    bool normal;
-    bool hard;
+
+    // Difficulty level
+    enum Difficult
+    {
+        easy,
+        normal,
+        hard
+    };
+
+    Difficult difficult;
 };
 
 #endif // GAMESETTINGS_H

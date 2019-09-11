@@ -388,11 +388,7 @@ void MainWindow::on_rbtn_easy_toggled(bool checked)
 {
     if (checked == true)
     {
-        gameMaster.gameSettings.easy = true;
-    }
-    else
-    {
-        gameMaster.gameSettings.easy = false;
+        gameMaster.gameSettings.difficult = gameMaster.gameSettings.easy;
     }
 }
 
@@ -401,11 +397,7 @@ void MainWindow::on_rbtn_normal_toggled(bool checked)
 {
     if (checked == true)
     {
-        gameMaster.gameSettings.normal = true;
-    }
-    else
-    {
-        gameMaster.gameSettings.normal = false;
+        gameMaster.gameSettings.difficult = gameMaster.gameSettings.normal;
     }
 }
 
@@ -414,10 +406,6 @@ void MainWindow::on_rbtn_hard_toggled(bool checked)
 {
     if (checked == true)
     {
-        gameMaster.gameSettings.hard = true;
-    }
-    else
-    {
-        gameMaster.gameSettings.hard = false;
+        gameMaster.gameSettings.difficult = gameMaster.gameSettings.hard;
     }
 }
